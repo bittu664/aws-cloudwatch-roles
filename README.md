@@ -24,10 +24,10 @@ Example Playbook
 Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
 
    ```
-- name: "Installing AWS Cloudwatch agent in ubuntu"
-  become: yes
-  hosts: localhost
-  roles:
+ - name: "Installing AWS Cloudwatch agent in ubuntu"
+   become: yes
+   hosts: localhost
+   roles:
     - bittu664.aws_cloudwatch_roles
    ```
 

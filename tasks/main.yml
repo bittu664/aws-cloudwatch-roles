@@ -1,0 +1,41 @@
+---
+  - name: updating ubuntu
+    command: apt-get update -y
+  - name: upgrading ubuntu
+    command: apt-get upgrade -y
+  - name: installing unzip
+    command: apt-get install unzip
+  - name: installing perl time
+    command: apt-get install libwww-perl libdatetime-perl -y
+  - name: downloading agents..
+    command: curl https://aws-cloudwatch.s3.amazonaws.com/downloads/CloudWatchMonitoringScripts-1.2.2.zip -O
+  - name: inzip ...
+    command: unzip CloudWatchMonitoringScripts-1.2.2.zip
+  - name: rm agent
+    command: rm CloudWatchMonitoringScripts-1.2.2.zip  
+  - name: verifying memory in verbose
+    shell:
+     cmd: ./mon-put-instance-data.pl --mem-util --verify --verbose
+     chdir: /home/ubuntu/aws-scripts-mon
+  - name: verifyimg in disk in verbose mode
+    shell:
+     cmd:  ./mon-put-instance-data.pl --mem-util --disk-space-util --disk-path=/ --verify --verbose
+     chdir: /home/ubuntu/aws-scripts-mon
+  - name: data collection of memory
+    shell:
+     cmd:  ./mon-put-instance-data.pl --mem-used-incl-cache-buff --mem-util --mem-used --mem-avail
+     chdir: /home/ubuntu/aws-scripts-mon
+  - name: create a cron in node systems
+    cron:
+     name: "gentscronli"
+     user: "ubuntu"
+     minute: "*/2"
+     hour: "*"
+     day: "*"
+     month: "*"
+     weekday: "*"
+     job: ~/aws-scripts-mon/mon-put-instance-data.pl --mem-used-incl-cache-buff --mem-util --disk-space-util --disk-path=/ --from-cron
+  - name: verifyimg the last 12 hrs data
+    shell:
+     cmd:  ./mon-get-instance-stats.pl --recent-hours=12
+     chdir: /home/ubuntu/aws-scripts-mon
